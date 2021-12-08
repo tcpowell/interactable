@@ -11,7 +11,7 @@ import net.runelite.client.config.Range;
 @ConfigGroup(InteractableConfig.GROUP)
 public interface InteractableConfig extends Config
 {
-	String GROUP = "interactableHighlight";
+	String GROUP = "interactableHints";
 
 	@ConfigItem(
 		keyName = "toggleKeybind",

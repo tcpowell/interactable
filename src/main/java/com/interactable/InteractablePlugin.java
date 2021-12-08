@@ -33,7 +33,7 @@ import net.runelite.client.util.HotkeyListener;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Interactable Highlight"
+	name = "Interactable Hints"
 )
 public class InteractablePlugin extends Plugin
 {
@@ -80,6 +80,8 @@ public class InteractablePlugin extends Plugin
 		keyManager.registerKeyListener(hotkeyListener);
 		overlayManager.add(interactableOverlay);
 		objects = new ArrayList<TileObject>();
+		attackNpcs = new ArrayList<NPC>();
+		interactNpcs = new ArrayList<NPC>();
 	}
 
 	@Override
@@ -89,6 +91,8 @@ public class InteractablePlugin extends Plugin
 		keyManager.unregisterKeyListener(hotkeyListener);
 		overlayManager.remove(interactableOverlay);
 		objects = null;
+		attackNpcs = null;
+		interactNpcs = null;
 	}
 
 	@Subscribe
@@ -102,27 +106,30 @@ public class InteractablePlugin extends Plugin
 			}
 			else if (remainingClientTicks > 0)
 			{
-
-				int newObjectAlpha = config.objectHighlightColor().getAlpha() * remainingClientTicks / 50;
-				currentObjectColor = new Color(config.objectHighlightColor().getRed(), config.objectHighlightColor().getGreen(), config.objectHighlightColor().getBlue(), newObjectAlpha);
-
-				int newAttackAlpha = config.attackNpcColor().getAlpha() * remainingClientTicks / 50;
-				currentNpcAttackColor = new Color(config.attackNpcColor().getRed(), config.attackNpcColor().getGreen(), config.attackNpcColor().getBlue(), newAttackAlpha);
-
-				int newInteractAlpha = config.interactableNpcColor().getAlpha() * remainingClientTicks / 50;
-				currentNpcInteractColor = new Color(config.interactableNpcColor().getRed(), config.interactableNpcColor().getGreen(), config.interactableNpcColor().getBlue(), newInteractAlpha);
-
+				fadeOut();
 				remainingClientTicks--;
 			}
 			else
 			{
 				shown = false;
-				log.debug("Interactable auto-hide triggered");
+				log.debug("Interactable Hints auto-hide triggered");
 				currentObjectColor = config.objectHighlightColor();
 				currentNpcAttackColor = config.attackNpcColor();
 				currentNpcInteractColor = config.interactableNpcColor();
 			}
 		}
+	}
+
+	private void fadeOut()
+	{
+		int newObjectAlpha = config.objectHighlightColor().getAlpha() * remainingClientTicks / 50;
+		currentObjectColor = new Color(config.objectHighlightColor().getRed(), config.objectHighlightColor().getGreen(), config.objectHighlightColor().getBlue(), newObjectAlpha);
+
+		int newAttackAlpha = config.attackNpcColor().getAlpha() * remainingClientTicks / 50;
+		currentNpcAttackColor = new Color(config.attackNpcColor().getRed(), config.attackNpcColor().getGreen(), config.attackNpcColor().getBlue(), newAttackAlpha);
+
+		int newInteractAlpha = config.interactableNpcColor().getAlpha() * remainingClientTicks / 50;
+		currentNpcInteractColor = new Color(config.interactableNpcColor().getRed(), config.interactableNpcColor().getGreen(), config.interactableNpcColor().getBlue(), newInteractAlpha);
 	}
 
 	@Provides
@@ -141,7 +148,7 @@ public class InteractablePlugin extends Plugin
 			currentNpcInteractColor = config.interactableNpcColor();
 
 			shown = !shown;
-			log.debug("Interactable overlay toggled to " + shown);
+			log.debug("Interactable Hints overlay toggled to " + shown);
 			if (shown)
 			{
 				remainingClientTicks = config.autoHideTimeout() * 50;
@@ -240,12 +247,12 @@ public class InteractablePlugin extends Plugin
 
 	private boolean objectCompCheck(ObjectComposition comp)
 	{
-		return (!Strings.isNullOrEmpty(comp.getName()) && !comp.getName().equals("null") && objectActionCheck(comp));
+		return (comp != null && !Strings.isNullOrEmpty(comp.getName()) && !comp.getName().equals("null") && objectActionCheck(comp));
 	}
 
 	private boolean npcCompCheck(NPCComposition comp)
 	{
-		return (!Strings.isNullOrEmpty(comp.getName()) && !comp.getName().equals("null"));
+		return (comp != null && !Strings.isNullOrEmpty(comp.getName()) && !comp.getName().equals("null"));
 	}
 
 	private boolean gameObjectCheck(TileObject object)
