@@ -291,7 +291,7 @@ public class InteractablePlugin extends Plugin
 	{
 		for (String action : comp.getActions())
 		{
-			if (!Strings.isNullOrEmpty(action) && action.equals("Attack"))
+			if (!Strings.isNullOrEmpty(action) && action.equals("Attack") && client.getVarpValue(1306) !=3)
 			{
 				return true;
 			}
@@ -303,7 +303,7 @@ public class InteractablePlugin extends Plugin
 	{
 		for (String action : comp.getActions())
 		{
-			if (!Strings.isNullOrEmpty(action) && !action.equals("null"))
+			if (!Strings.isNullOrEmpty(action) && !action.equals("null") && !action.equals("Attack"))
 			{
 				return true;
 			}
